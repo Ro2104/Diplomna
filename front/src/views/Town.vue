@@ -1,6 +1,6 @@
 <template>
     <div>
-        <CreateProduct />
+        <CreateProduct v-if="user.isAdmin" />
         <ProductTable />
     </div>
 </template>
@@ -14,5 +14,10 @@ export default {
         CreateProduct,
         ProductTable,
     },
+    computed: {
+        user() {
+            return this.$store.state.auth.newuser.user
+        }
+    }
 }
 </script>

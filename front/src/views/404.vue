@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <h1 class="notfound">
-            Тут був ростік =(.
+            Данная страница не найдена.
             <router-link to='/'>Вернутся на главную страницу </router-link>
         </h1>
     </div>

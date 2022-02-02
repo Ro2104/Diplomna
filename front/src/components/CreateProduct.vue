@@ -41,10 +41,26 @@ export default {
         price: {minValue: minValue(1)}
     },
     methods: {
-        createProduct() {
+        async createProduct() {
             if(this.$v.$invalid) {
                 this.$v.$touch()
                 return
+            }
+            const formData = {
+                id: this.$route.params.url,
+                title: this.title,
+                count: this.count,
+                characteristic: this.characteristic,
+                price: this.price
+            }
+            try {
+                await this.$store.dispatch('createProduct',formData)
+                this.title = '',
+                this.count = '',
+                this.characteristic = '',
+                this.price = ''
+            } catch (e) {
+                alert('Произошел сбой')
             }
         }
     }

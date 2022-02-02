@@ -11,7 +11,8 @@
                     :exact="link.exact"
                 >
                 
-                    <a class="nav__link">{{link.title}}</a>
+                    <a v-if="link.IsAdmin && user.isAdmin" class="nav__link">{{link.title}}</a>
+                    <a v-else-if="!link.IsAdmin" class="nav__link">{{link.title}}</a>
                 </router-link>
             </ul>
         </div>
@@ -23,13 +24,18 @@ export default {
     data: () => ({
         links: [
             {title: 'Склады', url: '/', exact: true},
-            {title: 'Создать склад', url: '/createwarehouse'},
+            {title: 'Создать склад', url: '/createwarehouse', IsAdmin: true},
             {title: 'Заказы', url: '/myorder'},
             {title: 'Мой аккаунт', url: '/myaccount'},
-            {title: 'Заработок', url: '/profit'},
-            {title: 'Все пользователи', url: '/allusers'},
+            {title: 'Заработок', url: '/profit', IsAdmin: true},
+            {title: 'Все пользователи', url: '/allusers', IsAdmin: true},
         ]
     }),
+    computed: {
+        user() {
+            return this.$store.state.auth.newuser.user
+        }
+    }
 }
 </script>
 

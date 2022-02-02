@@ -16,10 +16,18 @@ export default {
       return (this.$route.meta.layout || 'empty') + '-layout'
     }
   },
+  mounted() {
+    this.$store.dispatch('auth')
+  },
   components: {
     MainLayout,
     EmptyLayout
   }
-
+  
 }
 </script>
+
+<style lang="scss">
+@import 'assets/style/index.css';
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+</style>

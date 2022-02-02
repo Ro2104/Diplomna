@@ -2,7 +2,7 @@
     <div class="product-table">
         <div class="container">
             <h2 class="product-table__headline">Товар на складе</h2>
-            <form v-if="editOpen" class="product-table__update">
+            <form v-if="editOpen" class="product-table__update" @submit.prevent="updateProduct">
                 <h3 class="product-table__update--headline">Редактирование товара</h3>
                 <input type="text" class="input product-table__update--input" placeholder="Название" v-model="title">
                 <input type="text" class="input product-table__update--input" placeholder="Характеристика" v-model="characteristic">
@@ -11,19 +11,20 @@
                 <input type="submit" class="button product-table__update--button" value="Изменить">
             </form>
             <div class="product-table__box">
-                <div class="product-table__item">
-                    <h3 class="product-table__item--text"><span class="product-table__item--span">Название:</span> <span>Порошок</span></h3>
-                    <h3 class="product-table__item--text product-table__item--text-character"><span class="product-table__item--span">Характеристика:</span> <span>Великий</span></h3>
-                    <h3 class="product-table__item--text"><span class="product-table__item--span">Количество:</span> <span>22</span></h3>
-                    <h3 class="product-table__item--text"><span class="product-table__item--span">Цена:</span> <span>555</span></h3>
-                    <h3 class="product-table__item--order" @click.prevent="openModal(1, 'Порошок', '24 sort', 555, 2)">Заказать</h3>
-                    <h3 class="product-table__item--edit edit" @click.prevent="editProduct(1, 'Порошок', '24 sort', 555, 2)">Изменить</h3>
-                    <h3 class="product-table__item--delete delete">Удалить</h3>
+                <div class="product-table__item" v-for="product in products" :key="product.id">
+                    <h3 class="product-table__item--text"><span class="product-table__item--span">Название:</span> <span>{{product.title}}</span></h3>
+                    <h3 class="product-table__item--text product-table__item--text-character"><span class="product-table__item--span">Характеристика:</span> <span>{{product.characteristic}}</span></h3>
+                    <h3 class="product-table__item--text"><span class="product-table__item--span">Количество:</span> <span>{{product.count}}</span></h3>
+                    <h3 class="product-table__item--text"><span class="product-table__item--span">Цена:</span> <span>{{product.price}}</span></h3>
+                    <h3 class="product-table__item--order" @click.prevent="openModal(product.id, product.title, product.characteristic, product.price, product.count)">Заказать</h3>
+                    <h3 v-if="user.isAdmin" class="product-table__item--edit edit" @click.prevent="editProduct(product.id, product.title, product.characteristic, product.price, product.count)">Изменить</h3>
+                    <h3 v-if="user.isAdmin" class="product-table__item--delete delete" @click.prevent="deleteProduct(product.id)">Удалить</h3>
                 </div>
             </div>
         </div>
         <ModalProduct v-if="isOpen" 
-        :isOpen="isOpen"
+        :isOpen="isOpen" 
+        @Cancel="ChangeIsOpen" 
         :title="title" 
         :price="price" 
         :number="count" 
@@ -34,9 +35,11 @@
 
 <script>
 import ModalProduct from '../components/ModalProduct'
+import axios from 'axios'
 
 export default {
     data: () => ({
+        products: [],
         id: '',
         title: '',
         characteristic: '',
@@ -46,8 +49,22 @@ export default {
         isOpen: false,
         editOpen: false
     }),   
-
+    mounted() {
+        this.getProducts()
+    },
     methods: {
+        ChangeIsOpen(data) {
+            this.isOpen = data
+            this.getProducts()
+        },
+        async getProducts() {
+            try {   
+                const result = await axios.get(`/api/products/${this.$route.params.url}`)
+                this.products = result.data
+            } catch (e) {
+                alert('Сбой в системе')
+            }
+        },
         openModal(id, title, characteristic, price, count) {
             this.isOpen = !this.isOpen
             this.id = id
@@ -64,7 +81,43 @@ export default {
             this.count = count
             this.editOpen = !this.editOpen
         },
+        async updateProduct() {
+            const formData = {
+                id: this.id,
+                title: this.title,
+                count: this.count,
+                characteristic: this.characteristic,
+                price: this.price
+            }
 
+            try {
+                await this.$store.dispatch('updateProduct',formData)
+                this.title = '',
+                this.count = '',
+                this.characteristic = '',
+                this.price = ''
+                this.editOpen = !this.editOpen
+                this.getProducts()
+            } catch (e) {
+                alert('Произошел сбой')
+            }
+        },
+        async deleteProduct(id) {
+            if(this.$store.state.auth.newuser.user.isAdmin) {
+                try {
+                    await axios.delete(`/api/product/${id}`)
+                    this.getProducts()
+                }
+                catch (e) {
+                    alert('Данный елемент не найден')
+                }
+            }
+        }
+    },
+    computed: {
+        user() {
+            return this.$store.state.auth.newuser.user
+        }
     },
     components: {
         ModalProduct

@@ -11,11 +11,53 @@ const routes = [
     component: () => import('../views/Home.vue'),
   },
   {
+    path: '/createwarehouse',
+    name: 'Createwahouse',
+    meta: {layout: 'main'},
+    component: () => import('../views/Createwarehouse.vue')
+  },
+  {
+    path: '/myorder',
+    name: 'MyOrder',
+    meta: {layout: 'main'},
+    component: () => import('../views/MyOrder.vue')
+  },
+  {
+    path: '/myaccount',
+    name: 'MyAccount',
+    meta: {layout: 'main'},
+    component: () => import('../views/MyAccount.vue')
+  },
+  {
+    path: '/profit',
+    name: 'Profit',
+    meta: {layout: 'main'},
+    component: () => import('../views/Profit.vue')
+  },
+  {
+    path: '/allusers',
+    name: 'AllUsers',
+    meta: {layout: 'main'},
+    component: () => import('../views/AllUsers.vue')
+  },
+  {
     path: '/warehouse/:url',
     name: 'Town',
     meta: {layout: 'main'},
     component: () => import('../views/Town.vue'),
     props: true
+  },
+  {
+    path: '/signup',
+    name: 'SignUp',
+    meta: {layout: 'empty'},
+    component: () => import('../views/SignUp.vue')
+  },
+  {
+    path: '/signin',
+    name: 'SignIn',
+    meta: {layout: 'empty'},
+    component: () => import('../views/SignIn.vue')
   },
   {
     path: '/404',

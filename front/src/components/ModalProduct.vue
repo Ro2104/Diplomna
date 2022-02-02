@@ -43,13 +43,34 @@ export default {
         recipient_city: {required}
     },
     methods: {
-        createOrder() {
+        async createOrder() {
             if(this.$v.$invalid) {
                 this.$v.$touch()
                 return
             }
-            this.RemoveModal()
-
+            const formData = {
+                warehouse: this.$route.params.url,
+                owner: this.$store.state.auth.newuser.user.id,
+                product: this.id,
+                title: this.title,
+                count: this.count, 
+                price: this.price, 
+                recipient_city: this.recipient_city,
+                data: this.date,
+                number: this.number
+            }
+            const pith = {
+                id: this.id,
+                count: this.number - this.count
+            }
+            try {
+                
+                await this.$store.dispatch('createOrder',formData)
+                await this.$store.dispatch('updateProductNumber',pith)
+                this.RemoveModal()
+            } catch (e) {
+                alert('Произошел сбой')
+            }
         },
         RemoveModal() {
             this.isOpen = !this.isOpen
